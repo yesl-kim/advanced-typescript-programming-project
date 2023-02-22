@@ -1,6 +1,10 @@
 import { useState } from 'react'
 import { Button, Col, Row } from 'reactstrap'
+import { Database } from '../database/Database'
+import { PersonalDetailsTableBuilder } from '../database/PersonalDetailsTableBuilder'
+import { TableBuilder } from '../database/TableBuilder'
 import { IPersonState } from '../state'
+import { PersonRecord } from '../types'
 import { FormValidation } from '../validation/FormValidation'
 
 const defaultPerson: Readonly<IPersonState> = {
@@ -25,6 +29,13 @@ const PersonalDetails = () => {
 
   const [canSave, setCanSave] = useState(false)
   const userCanSave = (hasErrors: boolean) => setCanSave(hasErrors)
+
+  const loadPeople = () => {
+    const people: PersonRecord[] = []
+    const tableBuilder = new PersonalDetailsTableBuilder()
+    const dataLayer = new Database(tableBuilder.build())
+    dataLayer.read().then((people) => {})
+  }
 
   return (
     <Row>

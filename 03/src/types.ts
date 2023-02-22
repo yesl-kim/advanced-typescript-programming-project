@@ -1,4 +1,4 @@
-import { IPersonState } from './state'
+import { IPersonState, IRecordState, RecordState } from './state'
 
 export type StringOrNull = string | null
 
@@ -27,3 +27,5 @@ export interface ITable {
   indexName(): string
   build(database: IDBDatabase): void
 }
+
+export type PersonRecord = RecordState & IPersonState

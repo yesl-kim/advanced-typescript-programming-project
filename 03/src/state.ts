@@ -12,3 +12,11 @@ export interface IPersonState {
   dateOfBirth: StringOrNull
   personId: string
 }
+
+export interface IRecordState {
+  isActive: boolean
+}
+
+export class RecordState implements IRecordState {
+  public isActive: boolean
+}
