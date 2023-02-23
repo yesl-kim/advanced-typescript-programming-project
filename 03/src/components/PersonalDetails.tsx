@@ -3,7 +3,7 @@ import { Button, Col, Row } from 'reactstrap'
 import { Database } from '../database/Database'
 import { PersonalDetailsTableBuilder } from '../database/PersonalDetailsTableBuilder'
 import { TableBuilder } from '../database/TableBuilder'
-import { IPersonState } from '../state'
+import { IPersonState, RecordState } from '../state'
 import { PersonRecord } from '../types'
 import { FormValidation } from '../validation/FormValidation'
 
@@ -20,7 +20,13 @@ const defaultPerson: Readonly<IPersonState> = {
   personId: '',
 }
 
+interface Props {}
+
 const PersonalDetails = () => {
+  const tableBuilder = new PersonalDetailsTableBuilder()
+  const dataLayer: Database<PersonRecord> = new Database(tableBuilder.build())
+  // let people: IPersonState[] = []
+  const [people, setPeople] = useState<PersonRecord[]>([])
   const [person, setPerson] = useState(defaultPerson)
 
   const updateBinding = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,10 +37,24 @@ const PersonalDetails = () => {
   const userCanSave = (hasErrors: boolean) => setCanSave(hasErrors)
 
   const loadPeople = () => {
-    const people: PersonRecord[] = []
-    const tableBuilder = new PersonalDetailsTableBuilder()
-    const dataLayer = new Database(tableBuilder.build())
-    dataLayer.read().then((people) => {})
+    dataLayer.read().then((peopleFromDB: PersonRecord[]) => {
+      setPeople(peopleFromDB)
+    })
+  }
+
+  const setActive = (personId: string) => {
+    const _person = people.find(p => p.personId === personId)
+    if(_person) setPerson(_person)
+  }
+
+  // TODO: 2023.02.24 ~ 여기부터 시작!
+  const deletePerson = (personId: string) => {
+    const _person = people.find(p => p.personId)
+    const state = new RecordState()
+    const personState = {..._person, ...state}
+    dataLayer.update(personState)
+    loadPeople()
+    // clear()
   }
 
   return (
@@ -222,7 +242,29 @@ const PersonalDetails = () => {
       <Col>
         <Col>
           <Row>
-            <Col>people</Col>
+            <Col>
+              {people.map((p) => (
+                <Row key={p.personId}>
+                  <Col lg="6">
+                    <label>{`${p.firstName} ${p.lastName}`}</label>
+                  </Col>
+                  <Col lg="3">
+                    <Button value={p.personId} color="link" onClick={setActive}>
+                      Edit
+                    </Button>
+                  </Col>
+                  <Col lg="3">
+                    <Button
+                      value={p.personId}
+                      color="link"
+                      onClick={delete}
+                    >
+                      Delete
+                    </Button>
+                  </Col>
+                </Row>
+              ))}
+            </Col>
           </Row>
           <Row>
             <Col lg="6">

@@ -19,4 +19,8 @@ export interface IRecordState {
 
 export class RecordState implements IRecordState {
   public isActive: boolean
+
+  constructor(initialState = false) {
+    this.isActive = initialState
+  }
 }
